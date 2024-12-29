@@ -5,12 +5,14 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
 
 // Supabase-Client initialisieren
-const supabaseUrl = 'https://scraizustvtatsasfbrd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjcmFpenVzdHZ0YXRzYXNmYnJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNjYwNDgsImV4cCI6MjA1MDc0MjA0OH0.JyfsTmWoLwwMRWOuMBf26QtRvSb9ANmtNLbxTjWjIZc';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 // Middleware
 app.use(cors());
@@ -37,6 +39,18 @@ app.post('/api/login', async (req, res) => {
 
     res.json({ success: true, user });
 });
+
+app.get('/api/test-connection', async (req, res) => {
+    try {
+        const { data, error } = await supabase.from('users').select('*').limit(1);
+        if (error) throw error;
+        res.json({ message: 'Verbindung erfolgreich!', data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Fehler bei der Verbindung zur Datenbank.' });
+    }
+});
+
 
 // API-Endpunkt für Neuigkeiten
 app.get('/api/news', async (req, res) => {
