@@ -142,7 +142,7 @@
         // Setze den Benutzernamen von localStorage
         const username = localStorage.getItem('username') || 'Benutzer';
         document.getElementById('username').textContent = username;
-    
+
         // Array von Farben für die Jobs
         const jobColors = [
             '#f09a05', // Orange
@@ -156,84 +156,81 @@
             '#900C3F', // Dunkelpink
             '#581845'  // Dunkelviolett
         ];
-    
-        // Fetch für News, Anmerkungen und Jobs
+
         // Fetch für News, Anmerkungen und Jobs
         async function fetchData() {
-    try {
-        const newsResponse = await fetch('/api/news?user=' + username);
-        const notesResponse = await fetch('/api/notes?user=' + username);
-        const jobsResponse = await fetch('/api/jobs?user=' + username);
+            try {
+                const newsResponse = await fetch('/api/news?user=' + username);
+                const notesResponse = await fetch('/api/notes?user=' + username);
+                const jobsResponse = await fetch('/api/jobs?user=' + username);
 
-        // Die Antworten parsen
-        const newsData = await newsResponse.json();
-        const notesData = await notesResponse.json();
-        const jobsData = await jobsResponse.json();
+                // Die Antworten parsen
+                const newsData = await newsResponse.json();
+                const notesData = await notesResponse.json();
+                const jobsData = await jobsResponse.json();
 
-        console.log('News-Daten:', newsData); // Hier für Debugging
-        console.log('Anmerkungen-Daten:', notesData); // Hier für Debugging
+                console.log('News-Daten:', newsData); // Debugging-Ausgabe
+                console.log('Anmerkungen-Daten:', notesData); // Debugging-Ausgabe
+                console.log('Jobs-Daten:', jobsData); // Debugging-Ausgabe
 
-        // Neuigkeiten anzeigen
-        const newsContent = document.getElementById('news-content');
-        newsContent.innerHTML = ''; // Leere den vorherigen Inhalt
-        if (Array.isArray(newsData.content.content) && newsData.content.content.length > 0) {
-            newsData.content.content.forEach(item => {
-                const newsItem = document.createElement('div');
-                newsItem.className = 'news-item'; // Klasse für die Nachricht
-                newsItem.innerHTML = `
-                    <div class="news-title">${item.title}:</div>
-                    <div class="news-content">${item.content}</div>
-                `;
-                newsContent.appendChild(newsItem);
-            });
-        } else {
-            newsContent.textContent = "Keine Neuigkeiten.";
+                // Neuigkeiten anzeigen
+                const newsContent = document.getElementById('news-content');
+                newsContent.innerHTML = ''; // Leere den vorherigen Inhalt
+                if (Array.isArray(newsData.content.content) && newsData.content.content.length > 0) {
+                    newsData.content.content.forEach(item => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'news-item'; // Klasse für die Nachricht
+                        newsItem.innerHTML = `
+                            <div class="news-title">${item.title}:</div>
+                            <div class="news-content">${item.content}</div>
+                        `;
+                        newsContent.appendChild(newsItem);
+                    });
+                } else {
+                    newsContent.textContent = "Keine Neuigkeiten.";
+                }
+
+                // Anmerkungen anzeigen
+                const notesContent = document.getElementById('notes-content');
+                notesContent.innerHTML = ''; // Leere den vorherigen Inhalt
+                if (Array.isArray(notesData.content.content) && notesData.content.content.length > 0) {
+                    notesData.content.content.forEach(item => {
+                        const noteItem = document.createElement('div');
+                        noteItem.className = 'note-item'; // Klasse für die Anmerkung
+                        noteItem.innerHTML = `
+                            <div class="note-title">${item.title}:</div>
+                            <div class="note-content">${item.content}</div>
+                        `;
+                        notesContent.appendChild(noteItem);
+                    });
+                } else {
+                    notesContent.textContent = "Keine Anmerkungen.";
+                }
+
+                // Jobliste aktualisieren
+                const jobsList = document.getElementById('jobs-list');
+                jobsList.innerHTML = ''; // Leere die Liste
+                if (Array.isArray(jobsData) && jobsData.length === 0) {
+                    jobsList.innerHTML = '<li>Keine aktuellen Jobs.</li>';
+                } else {
+                    jobsData.forEach((job, index) => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'job-item';
+                        listItem.textContent = job.jobs; // Hier den Jobtitel verwenden
+                        listItem.style.backgroundColor = jobColors[index % jobColors.length]; // Farben zuweisen
+                        jobsList.appendChild(listItem);
+                    });
+                }
+            } catch (error) {
+                console.error("Fehler beim Laden der Daten:", error);
+                document.getElementById('news-content').textContent = "Fehler beim Laden der Neuigkeiten.";
+                document.getElementById('notes-content').textContent = "Fehler beim Laden der Anmerkungen.";
+                document.getElementById('jobs-list').innerHTML = '<li>Fehler beim Laden der Jobs.</li>';
+            }
         }
 
-        // Anmerkungen anzeigen
-        const notesContent = document.getElementById('notes-content');
-        notesContent.innerHTML = ''; // Leere den vorherigen Inhalt
-        const notesArray = notesData.content.content.content; // Anpassen für die korrekte Struktur
-        if (Array.isArray(notesArray) && notesArray.length > 0) {
-            notesArray.forEach(item => {
-                const noteItem = document.createElement('div');
-                noteItem.className = 'note-item'; // Klasse für die Anmerkung
-                noteItem.innerHTML = `
-                    <div class="note-title">${item.title}:</div>
-                    <div class="note-content">${item.content}</div>
-                `;
-                notesContent.appendChild(noteItem);
-            });
-        } else {
-            notesContent.textContent = "Keine Anmerkungen.";
-        }
-
-        // Jobliste aktualisieren
-        const jobsList = document.getElementById('jobs-list');
-        jobsList.innerHTML = ''; // Leere die Liste
-        if (jobsData.length === 0) {
-            jobsList.innerHTML = '<li>Keine aktuellen Jobs.</li>';
-        } else {
-            jobsData.forEach((job, index) => {
-                const listItem = document.createElement('li');
-                listItem.className = 'job-item';
-                listItem.textContent = job.jobs; // Hier den Jobtitel verwenden
-                listItem.style.backgroundColor = jobColors[index % jobColors.length]; // Farben zuweisen
-                jobsList.appendChild(listItem);
-            });
-        }
-    } catch (error) {
-        console.error("Fehler beim Laden der Daten:", error);
-        document.getElementById('news-content').textContent = "Fehler beim Laden der Neuigkeiten.";
-        document.getElementById('notes-content').textContent = "Fehler beim Laden der Anmerkungen.";
-        document.getElementById('jobs-list').innerHTML = '<li>Fehler beim Laden der Jobs.</li>';
-    }
-}
-
-
-
-        fetchData();
+        // Fetch-Daten beim Laden der Seite abrufen
+        document.addEventListener('DOMContentLoaded', fetchData);
     </script>
-    
 </body>
 </html>
