@@ -4,10 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Willkommen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            text-align: center;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        button {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #6a11cb;
+            transform: translateY(-3px);
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ddd;
+        }
+    </style>
 </head>
 <body>
     <h1>Willkommen im FP Studio!</h1>
-    <p>Verwalte und entdecke deine Anime-Charaktere einfach und bequem.</p>
+    <p>Verwalte und entdecke deine Aufgaben.</p>
     <button onclick="window.location.href='login.html'">Logge dich ein</button>
+    <footer>&copy; 2024 FP Studio</footer>
 </body>
 </html>
