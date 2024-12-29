@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            width: 90%;
+            background: #fff;
+            color: #333;
+            margin: 50px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .button {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            color: #fff;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .section p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .jobs-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .job-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #fff; /* Weißer Text für besseren Kontrast */
+        }
+        .news-title {
+            font-size: 20px; /* Größe des Titels */
+            font-weight: bold; /* Fettdruck für bessere Lesbarkeit */
+            margin: 5px 0; /* Abstand oben und unten */
+            color: #0072ff; /* Eine Farbe für den Titel */
+        }
+        .news-content {
+            font-size: 16px; /* Standardgröße für den Inhalt */
+            margin-bottom: 15px; /* Abstand zwischen den Einträgen */
+            line-height: 1.5; /* Zeilenhöhe für bessere Lesbarkeit */
+        }
+        .note-title {
+            font-size: 20px; /* Größe des Titels der Anmerkungen */
+            font-weight: bold; /* Fettdruck für bessere Lesbarkeit */
+            margin: 5px 0; /* Abstand oben und unten */
+            color: #0072ff; /* Eine Farbe für den Titel der Anmerkungen */
+        }
+        .note-content {
+            font-size: 16px; /* Standardgröße für den Inhalt der Anmerkungen */
+            margin-bottom: 15px; /* Abstand zwischen den Einträgen */
+            line-height: 1.5; /* Zeilenhöhe für bessere Lesbarkeit */
+        }
+        footer {
+            margin-top: auto;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Willkommen, <span id="username">Benutzer</span>!</h1>
+    </header>
+
+    <div class="container">
+        <div class="buttons">
+            <a href="/tasks.html" class="button">Aufgaben</a>
+            <a href="https://forms.gle/N5NiKN5gcEP4ULiF8" class="button" target="_blank" rel="noopener noreferrer">Bewerbung</a>
+        </div>
+
+        <div class="section" id="news-section">
+            <h2>News</h2>
+            <div id="news-content">Neuigkeiten werden geladen...</div>
+        </div>
+
+        <div class="section" id="notes-section">
+            <h2>Anmerkungen</h2>
+            <div id="notes-content">Anmerkungen werden geladen...</div>
+        </div>
+
+        <div class="section" id="jobs-section">
+            <h2>Aktuelle Jobs</h2>
+            <ul class="jobs-list" id="jobs-list">
+                <li>Jobs werden geladen...</li>
+            </ul>
+        </div>
+        <h4>Wenn du einen Job kündigen möchtest, schreibe den Verwalter auf dem Discord Server an.</h4>
+        
+    </div>
+
+    <footer>&copy; 2024 Deine Anwendung</footer>
+
+    <script>
+        // Setze den Benutzernamen von localStorage
+        const username = localStorage.getItem('username') || 'Benutzer';
+        document.getElementById('username').textContent = username;
+    
+        // Array von Farben für die Jobs
+        const jobColors = [
+            '#f09a05', // Orange
+            '#1bd1bf', // Hellblau
+            '#2eb050', // Grün
+            '#3357FF', // Blau
+            '#FF33A1', // Pink
+            '#FFC300', // Gelb
+            '#DAF7A6', // Hellgrün
+            '#C70039', // Dunkelrot
+            '#900C3F', // Dunkelpink
+            '#581845'  // Dunkelviolett
+        ];
+    
+        // Fetch für News, Anmerkungen und Jobs
+        // Fetch für News, Anmerkungen und Jobs
+        async function fetchData() {
+    try {
+        const newsResponse = await fetch('/api/news?user=' + username);
+        const notesResponse = await fetch('/api/notes?user=' + username);
+        const jobsResponse = await fetch('/api/jobs?user=' + username);
+
+        // Die Antworten parsen
+        const newsData = await newsResponse.json();
+        const notesData = await notesResponse.json();
+        const jobsData = await jobsResponse.json();
+
+        console.log('News-Daten:', newsData); // Hier für Debugging
+        console.log('Anmerkungen-Daten:', notesData); // Hier für Debugging
+
+        // Neuigkeiten anzeigen
+        const newsContent = document.getElementById('news-content');
+        newsContent.innerHTML = ''; // Leere den vorherigen Inhalt
+        if (Array.isArray(newsData.content.content) && newsData.content.content.length > 0) {
+            newsData.content.content.forEach(item => {
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item'; // Klasse für die Nachricht
+                newsItem.innerHTML = `
+                    <div class="news-title">${item.title}:</div>
+                    <div class="news-content">${item.content}</div>
+                `;
+                newsContent.appendChild(newsItem);
+            });
+        } else {
+            newsContent.textContent = "Keine Neuigkeiten.";
+        }
+
+        // Anmerkungen anzeigen
+        const notesContent = document.getElementById('notes-content');
+        notesContent.innerHTML = ''; // Leere den vorherigen Inhalt
+        const notesArray = notesData.content.content.content; // Anpassen für die korrekte Struktur
+        if (Array.isArray(notesArray) && notesArray.length > 0) {
+            notesArray.forEach(item => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item'; // Klasse für die Anmerkung
+                noteItem.innerHTML = `
+                    <div class="note-title">${item.title}:</div>
+                    <div class="note-content">${item.content}</div>
+                `;
+                notesContent.appendChild(noteItem);
+            });
+        } else {
+            notesContent.textContent = "Keine Anmerkungen.";
+        }
+
+        // Jobliste aktualisieren
+        const jobsList = document.getElementById('jobs-list');
+        jobsList.innerHTML = ''; // Leere die Liste
+        if (jobsData.length === 0) {
+            jobsList.innerHTML = '<li>Keine aktuellen Jobs.</li>';
+        } else {
+            jobsData.forEach((job, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'job-item';
+                listItem.textContent = job.jobs; // Hier den Jobtitel verwenden
+                listItem.style.backgroundColor = jobColors[index % jobColors.length]; // Farben zuweisen
+                jobsList.appendChild(listItem);
+            });
+        }
+    } catch (error) {
+        console.error("Fehler beim Laden der Daten:", error);
+        document.getElementById('news-content').textContent = "Fehler beim Laden der Neuigkeiten.";
+        document.getElementById('notes-content').textContent = "Fehler beim Laden der Anmerkungen.";
+        document.getElementById('jobs-list').innerHTML = '<li>Fehler beim Laden der Jobs.</li>';
+    }
+}
+
+
+
+        fetchData();
+    </script>
+    
+</body>
+</html>

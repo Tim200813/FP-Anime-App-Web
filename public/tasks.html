@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aufgaben</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #1f1f1f;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            background: #343a40;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #f8f9fa;
+        }
+        .container {
+            margin: 30px;
+            width: 90%;
+            max-width: 800px;
+            background: #292b2c;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .task-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background 0.3s;
+            opacity: 0.85;
+        }
+        .task-item.completed {
+            background: #28a745; /* Grün für erledigte Aufgaben */
+            color: #e8f5e9; /* Textfarbe für erledigte Aufgaben */
+        }
+
+        .task-item.completed.very-important {
+        background: #28a745; /* Beibehalten der grünen Hintergrundfarbe für erledigte Aufgaben */
+        color: #e8f5e9; /* Textfarbe für erledigte Aufgaben */
+        }
+
+        .task-item.completed.normal {
+        background: #28a745; /* Beibehalten der grünen Hintergrundfarbe für erledigte Aufgaben */
+        color: #e8f5e9; /* Textfarbe für erledigte Aufgaben */
+        }
+
+        .task-item.completed.not-very-important {
+        background: #28a745; /* Beibehalten der grünen Hintergrundfarbe für erledigte Aufgaben */
+        color: #e8f5e9; /* Textfarbe für erledigte Aufgaben */
+        }
+        .task-item.very-important {
+            background: rgba(255, 73, 73, 0.7); /* Blasses Rot für "Sehr wichtig" */
+        }
+        .task-item.normal {
+            background: rgba(128, 56, 215, 0.7); /* Blasses Gelb für "Normal" */
+            color: rgb(255, 255, 255); /* Textfarbe für bessere Lesbarkeit */
+        }
+        .task-item.not-very-important {
+            background: rgba(99, 245, 255, 0.7); /* Blasses Blau für "Nicht sehr wichtig" */
+        }
+        .task-item:hover {
+            transform: translateY(-3px);
+        }
+        .task-detail {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: #343a40;
+            border-radius: 8px;
+        }
+        .button {
+            display: inline-block;
+            margin: 5px 5px 0 0;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.secondary {
+            background: #6c757d;
+        }
+        .button.secondary:hover {
+            background: #495057;
+        }
+        .back-button {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+        }
+        .back-button a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .back-button a:hover {
+            text-decoration: underline;
+        }
+        #completed-tasks h3 {
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s;
+        }
+        #completed-tasks h3:hover {
+            color: #ffffff;
+        }
+        #toggle-indicator {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Deine Aufgaben</h1>
+    </header>
+
+    <div class="back-button">
+        <a href="dashboard.html">&larr; Zurück zum Dashboard</a>
+    </div>
+
+    <div class="container">
+        <!-- Offene Aufgaben -->
+        <div id="open-tasks">
+            <h2>Offene Aufgaben</h2>
+            <div id="open-tasks-list"></div>
+        </div>
+
+        <!-- Erledigte Aufgaben -->
+        <div id="completed-tasks">
+            <h2 onclick="toggleCompletedTasks()">Erledigte Aufgaben <span id="toggle-indicator">[+]</span></h2>
+            <div id="completed-tasks-list" style="display: none;"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Deine Anwendung</p>
+    </footer>
+
+    <script>
+        function toggleCompletedTasks() {
+            const completedTasksList = document.getElementById('completed-tasks-list');
+            const toggleIndicator = document.getElementById('toggle-indicator');
+
+            if (completedTasksList.style.display === 'none') {
+                completedTasksList.style.display = 'block';
+                toggleIndicator.textContent = '[-]';
+            } else {
+                completedTasksList.style.display = 'none';
+                toggleIndicator.textContent = '[+]';
+            }
+        }
+
+        function getPriorityClass(priority) {
+            if (!priority) return '';
+            const normalizedPriority = priority.trim().toLowerCase();
+            switch (normalizedPriority) {
+                case 'sehr wichtig':
+                    return 'very-important';
+                case 'normal':
+                    return 'normal';
+                case 'nicht sehr wichtig':
+                    return 'not-very-important';
+                default:
+                    return '';
+            }
+        }
+
+        function sortTasksByPriority(tasks) {
+            const priorityOrder = {
+                'sehr wichtig': 1,
+                'normal': 2,
+                'nicht sehr wichtig': 3
+            };
+
+            tasks.sort((a, b) => {
+                const priorityA = priorityOrder[a.priority.trim().toLowerCase()] || 4; // Unbekannte Priorität nach unten
+                const priorityB = priorityOrder[b.priority.trim().toLowerCase()] || 4; // Unbekannte Priorität nach unten
+                return priorityA - priorityB;
+            });
+        }
+
+        function openDriveLink(driveLink) {
+    if (driveLink && driveLink.trim() !== '') {
+        window.open(driveLink, '_blank'); // Öffnet den Link in einem neuen Tab
+    } else {
+        alert('Kein Link vorhanden.');
+    }
+}
+
+
+
+
+
+        async function fetchTasks() {
+            const response = await fetch('/api/tasks?user=' + localStorage.getItem('username'));
+            const tasks = await response.json();
+            console.log(tasks); // Überprüfen, ob `drive_link` korrekt ist
+
+            const openTasksList = document.getElementById('open-tasks-list');
+            const completedTasksList = document.getElementById('completed-tasks-list');
+            openTasksList.innerHTML = '';
+            completedTasksList.innerHTML = '';
+
+            // Filter die offenen Aufgaben
+            const openTasks = tasks.filter(task => !task.completed);
+
+            // Sortiere die offenen Aufgaben nach Wichtigkeit
+            sortTasksByPriority(openTasks);
+
+            // Erstelle die Anzeigen für die offenen Aufgaben
+            openTasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                let details;
+                try {
+                    details = typeof task.details === 'string' ? JSON.parse(task.details) : task.details;
+                } catch (e) {
+                    details = ['Details nicht verfügbar'];
+                }
+
+                // Setze die CSS-Klasse für die Aufgabe
+                taskItem.className = `task-item open ${getPriorityClass(task.priority)}`;
+                taskItem.innerHTML = `
+                <h3>${task.title} (${task.completed ? 'Erledigt' : 'Offen'})</h3>
+                <div class="task-detail">
+                    <p><strong>Wichtigkeit:</strong> ${task.priority || 'Normal'}</p>
+                    <p>${Array.isArray(details) ? details.join('<br>') : details}</p>
+                    ${
+                        task.completed 
+                            ? `<button class="button secondary" onclick="undoTask(event, '${task.id}')">Rückgängig</button>`
+                            : `<button class="button" onclick="markAsCompleted(event, '${task.id}')">Fertig</button>`
+                    }
+                    ${
+                        task.drive_link && task.drive_link.trim() !== ''
+                            ? `<button class="button" onclick="openDriveLink('${task.drive_link}')">Öffne Link</button>`
+                            : `<button class="button" disabled>Kein Link</button>`
+                    }
+                </div>
+            `;
+
+
+                // Event Listener zum Ein- und Ausklappen der Details
+                taskItem.onclick = () => {
+                    const detailsElement = taskItem.querySelector('.task-detail');
+                    detailsElement.style.display = detailsElement.style.display === 'block' ? 'none' : 'block';
+                };
+
+                // Füge die Aufgabe zur Liste der offenen Aufgaben hinzu
+                openTasksList.appendChild(taskItem);
+            });
+
+            // Erstelle die Anzeigen für die erledigten Aufgaben
+            const completedTasks = tasks.filter(task => task.completed);
+            completedTasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                let details;
+                try {
+                    details = typeof task.details === 'string' ? JSON.parse(task.details) : task.details;
+                } catch (e) {
+                    details = ['Details nicht verfügbar'];
+                }
+
+                // Setze die CSS-Klasse für die Aufgabe
+                taskItem.className = `task-item completed ${getPriorityClass(task.priority)}`;
+                taskItem.innerHTML = `
+                <h3>${task.title} (${task.completed ? 'Erledigt' : 'Offen'})</h3>
+                <div class="task-detail">
+                    <p><strong>Wichtigkeit:</strong> ${task.priority || 'Normal'}</p>
+                    <p>${Array.isArray(details) ? details.join('<br>') : details}</p>
+                    ${
+                        task.completed 
+                            ? `<button class="button secondary" onclick="undoTask(event, '${task.id}')">Rückgängig</button>`
+                            : `<button class="button" onclick="markAsCompleted(event, '${task.id}')">Fertig</button>`
+                    }
+                    ${
+                        task.drive_link && task.drive_link.trim() !== ''
+                            ? `<button class="button" onclick="openDriveLink('${task.drive_link}')">Öffne Link</button>`
+                            : `<button class="button" disabled>Kein Link</button>`
+                    }
+                </div>
+            `;
+
+                // Event Listener zum Ein- und Ausklappen der Details
+                taskItem.onclick = () => {
+                    const detailsElement = taskItem.querySelector('.task-detail');
+                    detailsElement.style.display = detailsElement.style.display === 'block' ? 'none' : 'block';
+                };
+
+                // Füge die Aufgabe zur Liste der erledigten Aufgaben hinzu
+                completedTasksList.appendChild(taskItem);
+            });
+        }
+
+        //upload
+
+       
+
+
+        // Aufgabe als erledigt markieren
+        async function markAsCompleted(event, taskId) {
+            event.stopPropagation();
+
+            const response = await fetch('/api/completeTask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId })
+            });
+
+            if (response.ok) {
+                alert('Aufgabe als erledigt markiert!');
+                fetchTasks(); // Aktualisiere die Aufgabenliste
+            } else {
+                alert('Fehler beim Markieren der Aufgabe als erledigt.');
+            }
+        }
+
+        // Aufgabe rückgängig machen
+        async function undoTask(event, taskId) {
+            event.stopPropagation();
+
+            const response = await fetch('/api/undoTask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId })
+            });
+
+            if (response.ok) {
+                alert('Aufgabe wurde zurückgesetzt!');
+                fetchTasks(); // Aktualisiere die Aufgabenliste
+            } else {
+                alert('Fehler beim Rückgängigmachen der Aufgabe.');
+            }
+        }
+
+        // Beim Laden die Aufgaben abrufen
+        window.onload = fetchTasks;
+    </script>
+</body>
+</html>
