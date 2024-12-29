@@ -108,7 +108,7 @@
 
             try {
                 // Daten an den Server senden
-                const response = await fetch('/api/login', { // '/api/login' hier
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -118,6 +118,7 @@
 
                 const result = await response.json();
                 if (result.success) {
+                    localStorage.setItem('username', username); // Benutzername speichern
                     // Weiterleitung zum Dashboard
                     window.location.href = '/dashboard.html';
                 } else {
