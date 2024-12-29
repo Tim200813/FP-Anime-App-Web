@@ -61,18 +61,20 @@ app.get('/api/news', async (req, res) => {
     }
 
     const { data: userData, error } = await supabase
-        .from('users')
-        .select('news')
-        .eq('username', user)
-        .single();
+    .from('users')
+    .select('news')
+    .eq('username', user)
+    .single();
 
-    if (error || !userData) {
-        return res.status(500).json({ content: "Fehler beim Abrufen der Neuigkeiten." });
+    if (error || !userData || !userData.news) {
+    return res.status(500).json({ content: "Fehler beim Abrufen der Neuigkeiten." });
     }
 
-    // Sicherstellen, dass die Neuigkeiten als Array zurückgegeben werden
-    const newsArray = userData.news || [];
+    const newsArray = userData.news || []; // Leeres Array, wenn keine News vorhanden
     res.json({ content: newsArray });
+    console.log("Benutzerdaten:", userData);
+
+
 });
 
 
@@ -86,16 +88,19 @@ app.get('/api/notes', async (req, res) => {
     }
 
     const { data: userData, error } = await supabase
-        .from('users')
-        .select('annotations')
-        .eq('username', user)
-        .single();
+    .from('users')
+    .select('annotations')
+    .eq('username', user)
+    .single();
 
-    if (error || !userData) {
-        return res.status(500).json({ content: "Fehler beim Abrufen der Anmerkungen." });
+    if (error || !userData || !userData.annotations) {
+    return res.status(500).json({ content: "Fehler beim Abrufen der Anmerkungen." });
     }
 
-    res.json({ content: userData.annotations || [] });
+    res.json({ content: userData.annotations || [] }); // Leeres Array zurückgeben, wenn keine Anmerkungen existieren
+    console.log("Benutzerdaten:", userData);
+
+
 });
 
 
