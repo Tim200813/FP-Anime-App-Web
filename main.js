@@ -61,21 +61,20 @@ app.get('/api/news', async (req, res) => {
     }
 
     const { data: userData, error } = await supabase
-    .from('users')
-    .select('news')
-    .eq('username', user)
-    .single();
+        .from('users')
+        .select('news')
+        .eq('username', user)
+        .single();
 
     if (error || !userData || !userData.news) {
-    return res.status(500).json({ content: "Fehler beim Abrufen der Neuigkeiten." });
+        return res.status(500).json({ content: "Fehler beim Abrufen der Neuigkeiten." });
     }
 
     const newsArray = userData.news || []; // Leeres Array, wenn keine News vorhanden
-    res.json({ content: newsArray });
+    res.json({ content: newsArray }); // <-- Hier änderst du die Struktur
     console.log("Benutzerdaten:", userData);
-
-
 });
+
 
 
 
